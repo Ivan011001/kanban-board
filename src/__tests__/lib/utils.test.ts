@@ -1,4 +1,4 @@
-import { cn } from "./utils"
+import { cn } from "../../lib/utils"
 
 describe("cn function", () => {
   test("it combines class names correctly", () => {
