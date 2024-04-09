@@ -12,7 +12,7 @@ export const getRepoInfo = createAsyncThunk(
 
       const response = await axiosInstance.get(ownerAndName)
 
-      return response
+      return response.data
     } catch (error) {
       return rejectWithValue(error)
     }
@@ -29,7 +29,7 @@ export const getRepoIssues = createAsyncThunk(
         `${ownerAndName}/issues?state=all`,
       )
 
-      return response
+      return response.data
     } catch (error) {
       return rejectWithValue(error)
     }
