@@ -9,14 +9,12 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { searchSchema } from "../schemas"
 
-import { Input } from "antd"
+import { Input, Button } from "antd"
 
 import {
   getRepoInfo,
   getRepoIssues,
 } from "../redux/features/repo/repoOperations"
-
-const { Search } = Input
 
 type Inputs = {
   repoUrl: string
@@ -34,6 +32,9 @@ const SearchForm = () => {
     formState: { errors },
   } = useForm<Inputs>({
     resolver: zodResolver(searchSchema),
+    defaultValues: {
+      repoUrl: storedRepoUrl ?? "",
+    },
   })
 
   const onSubmit: SubmitHandler<Inputs> = ({ repoUrl }) => {
@@ -42,29 +43,35 @@ const SearchForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Controller
-        defaultValue={storedRepoUrl ?? ""}
-        disabled={isLoading}
-        control={control}
-        name="repoUrl"
-        render={({ field }) => (
-          <Search
-            {...field}
-            key={field.name}
-            placeholder="Enter repo URL"
-            allowClear
-            enterButton="Search"
-            size="large"
-            loading={isLoading}
-            onSearch={() => handleSubmit(onSubmit)()}
-          />
-        )}
-      />
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full flex gap-x-2 items-start"
+    >
+      <div className="flex-grow">
+        <Controller
+          disabled={isLoading}
+          control={control}
+          name="repoUrl"
+          render={({ field }) => (
+            <Input
+              {...field}
+              key={field.name}
+              placeholder="Enter repo URL"
+              allowClear
+              size="large"
+              className="h-10"
+            />
+          )}
+        />
 
-      {errors.repoUrl && (
-        <p className="text-sm text-red-500">{errors.repoUrl.message}</p>
-      )}
+        {errors.repoUrl && (
+          <p className="text-sm text-red-500">{errors.repoUrl.message}</p>
+        )}
+      </div>
+
+      <Button htmlType="submit" className="h-10" type="default">
+        Load issues
+      </Button>
     </form>
   )
 }
