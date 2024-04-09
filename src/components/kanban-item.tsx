@@ -1,4 +1,5 @@
 import { useSortable } from "@dnd-kit/sortable"
+
 import { CSS } from "@dnd-kit/utilities"
 
 import { type IIssue } from "../types"
@@ -12,27 +13,15 @@ interface IKanbanItemProps {
 }
 
 const KanbanItem = ({ item }: IKanbanItemProps) => {
-  const { title, number, created_at, user, comments } = item
-
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: item.id,
-    data: {
-      type: "Issue",
-      item,
-    },
-  })
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: item.id })
 
   const style = {
-    transition,
     transform: CSS.Transform.toString(transform),
+    transition,
   }
+
+  const { title, number, created_at, user, comments } = item
 
   return (
     <div
@@ -42,7 +31,6 @@ const KanbanItem = ({ item }: IKanbanItemProps) => {
       {...listeners}
       className={cn(
         "p-2.5 h-[100px] min-h-[100px] items-center flex text-left rounded-xl hover:ring-2 hover:ring-inset hover:ring-rose-500 cursor-grab relative select-none",
-        isDragging && "opacity-30",
       )}
     >
       <div className="overflow-hidden">
