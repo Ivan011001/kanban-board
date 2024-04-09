@@ -74,6 +74,12 @@ export const repoSlice = createSlice({
               number: issue.number,
               comments: issue.comments,
               created_at: issue.created_at,
+              columnState:
+                issue.state === "open" && !issue.assignee
+                  ? "todo"
+                  : issue.assignee
+                    ? "progress"
+                    : "done",
             }
           })
         },

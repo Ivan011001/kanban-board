@@ -25,7 +25,9 @@ export const getRepoIssues = createAsyncThunk(
     try {
       const ownerAndName = extractRepo(repoUrl)
 
-      const response = await axiosInstance.get(`${ownerAndName}/issues`)
+      const response = await axiosInstance.get(
+        `${ownerAndName}/issues?state=all`,
+      )
 
       return response
     } catch (error) {

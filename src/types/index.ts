@@ -1,3 +1,5 @@
+export type ColumnState = "todo" | "progress" | "done"
+
 export interface IIssue {
   id: number
   title: string
@@ -5,7 +7,13 @@ export interface IIssue {
   comments: number
   user: string
   created_at: string
+  columnState: ColumnState
   assignee?: string
+}
+
+export interface IColumn {
+  id: ColumnState
+  title: string
 }
 
 export type IRepoInfoResponse = {
