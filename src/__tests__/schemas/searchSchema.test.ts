@@ -1,4 +1,4 @@
-import { GitHubRepoSchema, searchSchema } from "./searchSchema"
+import { GitHubRepoSchema, searchSchema } from "../../schemas/searchSchema"
 
 import { z } from "zod"
 
