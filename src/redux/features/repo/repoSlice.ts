@@ -10,11 +10,13 @@ import {
 } from "../../../types"
 
 interface IRepoSlice {
-  ownerUrl: string
   repoUrl: string
-  name: string
-  owner: string
-  stars: number
+  info: {
+    ownerUrl: string
+    name: string
+    owner: string
+    stars: number
+  }
   issues: {
     todo: IIssue[]
     progress: IIssue[]
@@ -25,11 +27,13 @@ interface IRepoSlice {
 }
 
 const initialState: IRepoSlice = {
-  ownerUrl: "",
   repoUrl: "",
-  name: "",
-  owner: "",
-  stars: 0,
+  info: {
+    ownerUrl: "",
+    name: "",
+    owner: "",
+    stars: 0,
+  },
   issues: {
     todo: [],
     progress: [],
@@ -53,6 +57,13 @@ export const repoSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(getRepoInfo.pending, state => {
+        state.repoUrl = ""
+        state.info = {
+          ownerUrl: "",
+          name: "",
+          owner: "",
+          stars: 0,
+        }
         state.issues = {
           todo: [],
           progress: [],
@@ -65,14 +76,23 @@ export const repoSlice = createSlice({
         getRepoInfo.fulfilled,
         (state, action: PayloadAction<IRepoInfoResponse>) => {
           state.loading = false
-          state.name = action.payload.name
-          state.owner = action.payload.owner.login
-          state.stars = action.payload.stargazers_count
-          state.ownerUrl = action.payload.owner.html_url
           state.repoUrl = action.payload.html_url
+          state.info = {
+            name: action.payload.name,
+            owner: action.payload.owner.login,
+            stars: action.payload.stargazers_count,
+            ownerUrl: action.payload.owner.html_url,
+          }
         },
       )
       .addCase(getRepoInfo.rejected, (state, action) => {
+        state.repoUrl = ""
+        state.info = {
+          ownerUrl: "",
+          name: "",
+          owner: "",
+          stars: 0,
+        }
         state.issues = {
           todo: [],
           progress: [],
@@ -82,6 +102,13 @@ export const repoSlice = createSlice({
         state.error = action.error.message || "Failed to fetch repo information"
       })
       .addCase(getRepoIssues.pending, state => {
+        state.repoUrl = ""
+        state.info = {
+          ownerUrl: "",
+          name: "",
+          owner: "",
+          stars: 0,
+        }
         state.issues = {
           todo: [],
           progress: [],
@@ -126,6 +153,13 @@ export const repoSlice = createSlice({
         },
       )
       .addCase(getRepoIssues.rejected, (state, action) => {
+        state.repoUrl = ""
+        state.info = {
+          ownerUrl: "",
+          name: "",
+          owner: "",
+          stars: 0,
+        }
         state.issues = {
           todo: [],
           progress: [],
