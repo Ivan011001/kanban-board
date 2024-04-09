@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 
 import {
@@ -23,8 +23,8 @@ import KanbanItem from "./kanban-item"
 
 import { COLUMNS } from "../constants"
 
-import type { IColumn, IIssue } from "../types"
-import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core"
+import type { ColumnState, IColumn, IIssue } from "../types"
+import type { DragStartEvent, DragEndEvent, DragOverEvent } from "@dnd-kit/core"
 import { arrayMove } from "@dnd-kit/sortable"
 
 const KanbanBoard = () => {
@@ -63,6 +63,7 @@ const KanbanBoard = () => {
         sensors={sensors}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
+        onDragOver={onDragOver}
       >
         <div className="m-auto flex gap-4">
           <div className="flex gap-4">
@@ -110,18 +111,135 @@ const KanbanBoard = () => {
 
     const { columnState } = currentIssue
 
-    if (active.id !== over.id) {
-      const oldIndex = issues[columnState].findIndex(
-        item => item.id === active.id,
-      )
-      const newIndex = issues[columnState].findIndex(
-        item => item.id === over.id,
-      )
+    if (active.id === over.id) return
 
-      const newIssues = arrayMove(issues[columnState], oldIndex, newIndex)
-
-      dispatch(updateIssuePosition({ column: columnState, newIssues }))
+    let overIssue: IIssue | null = null
+    if (typeof over.id === "number") {
+      overIssue = getOverIssue(over, over.id)
     }
+
+    if (
+      typeof over.id === "string" &&
+      issues[over.id as ColumnState].length === 0
+    ) {
+      const updatedIssue = {
+        ...currentIssue,
+        columnState: over.id as ColumnState,
+      }
+
+      dispatch(
+        updateIssuePosition({
+          column: over.id as ColumnState,
+          newIssues: [updatedIssue],
+        }),
+      )
+
+      dispatch(
+        updateIssuePosition({
+          column: currentIssue.columnState,
+          newIssues: [
+            ...issues[currentIssue.columnState].filter(
+              issue => issue.id !== currentIssue.id,
+            ),
+          ],
+        }),
+      )
+
+      return
+    } else if (
+      typeof over.id === "string" &&
+      issues[over.id as ColumnState].length !== 0 &&
+      over.id !== currentIssue.columnState
+    ) {
+      const newIssues = [
+        ...issues[over.id as ColumnState],
+        {
+          ...currentIssue,
+          columnState: over.id as ColumnState,
+        },
+      ]
+
+      dispatch(
+        updateIssuePosition({
+          column: over.id as ColumnState,
+          newIssues,
+        }),
+      )
+
+      dispatch(
+        updateIssuePosition({
+          column: currentIssue.columnState,
+          newIssues: [
+            ...issues[currentIssue.columnState].filter(
+              issue => issue.id !== currentIssue.id,
+            ),
+          ],
+        }),
+      )
+
+      return
+    } else if (
+      typeof over.id === "number" &&
+      overIssue &&
+      overIssue.columnState !== currentIssue.columnState
+    ) {
+      const newIssues = [
+        ...issues[overIssue.columnState as ColumnState],
+        {
+          ...currentIssue,
+          columnState: overIssue.columnState as ColumnState,
+        },
+      ]
+
+      dispatch(
+        updateIssuePosition({
+          column: overIssue.columnState as ColumnState,
+          newIssues,
+        }),
+      )
+
+      dispatch(
+        updateIssuePosition({
+          column: currentIssue.columnState,
+          newIssues: [
+            ...issues[currentIssue.columnState].filter(
+              issue => issue.id !== currentIssue.id,
+            ),
+          ],
+        }),
+      )
+
+      return
+    }
+
+    const oldIndex = issues[columnState].findIndex(
+      item => item.id === active.id,
+    )
+    const newIndex = issues[columnState].findIndex(item => item.id === over.id)
+    const newIssues = arrayMove(issues[columnState], oldIndex, newIndex)
+    dispatch(updateIssuePosition({ column: columnState, newIssues }))
+  }
+
+  function onDragOver(event: DragOverEvent) {
+    const { active, over } = event
+    if (!over) return
+  }
+
+  function getOverIssue(over: any, id: number) {
+    let overIssue: IIssue | null = null
+
+    Object.keys(issues).forEach(status => {
+      const items = issues[status as ColumnState]
+
+      const foundItem = items.find(item => item.id === over!.id)
+
+      if (foundItem) {
+        overIssue = foundItem
+        return
+      }
+    })
+
+    return overIssue
   }
 }
 
