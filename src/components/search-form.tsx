@@ -22,7 +22,7 @@ type Inputs = {
   repoUrl: string
 }
 
-const Form = () => {
+const SearchForm = () => {
   const dispatch = useAppDispatch()
 
   const storedRepoUrl = useAppSelector(selectRepoUrl)
@@ -69,4 +69,4 @@ const Form = () => {
   )
 }
 
-export default Form
+export default SearchForm
