@@ -1,4 +1,4 @@
-import { capitalizeWord } from "."
+import { capitalizeWord } from "../../helpers"
 
 describe("capitalizeWord function", () => {
   test("it capitalizes the first letter of a word", () => {

@@ -1,4 +1,4 @@
-import { formatDate } from "."
+import { formatDate } from "../../helpers"
 
 describe("formatDate function", () => {
   test("it correctly formats today date", () => {
