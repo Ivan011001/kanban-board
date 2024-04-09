@@ -45,9 +45,7 @@ const Info = () => {
 
       <div className="flex items-center gap-x-2">
         <FaRegStar fill="orange" color="orange" />
-        <p>
-          {formatStars(stars)} {stars !== 1 ? "stars" : "star"}
-        </p>
+        <p>{formatStars(stars)}</p>
       </div>
     </div>
   )
