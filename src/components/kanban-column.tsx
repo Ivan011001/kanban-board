@@ -59,7 +59,7 @@ const KanbanColumn = ({ column, items }: IKanbanColumnProps) => {
     </DndContext>
   )
 
-  function onDragEnd(event) {
+  function onDragEnd(event: any) {
     const { over, active } = event
 
     if (active.id !== over.id) {

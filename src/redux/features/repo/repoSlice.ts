@@ -129,7 +129,7 @@ export const repoSlice = createSlice({
                 title: issue.title,
                 number: issue.number,
                 comments: issue.comments,
-                created_at: issue.created_at,
+                openedAt: issue.created_at,
                 columnState:
                   issue.state === "open" && !issue.assignee
                     ? "todo"

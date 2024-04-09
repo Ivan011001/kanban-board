@@ -6,7 +6,7 @@ export interface IIssue {
   number: number
   comments: number
   user: string
-  created_at: string
+  openedAt: string
   columnState: ColumnState
   assignee?: string
 }

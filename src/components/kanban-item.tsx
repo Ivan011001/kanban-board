@@ -13,15 +13,27 @@ interface IKanbanItemProps {
 }
 
 const KanbanItem = ({ item }: IKanbanItemProps) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: item.id })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: item.id,
+    data: {
+      type: "Issue",
+      issue: item,
+    },
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   }
 
-  const { title, number, created_at, user, comments } = item
+  const { title, number, openedAt, user, comments } = item
 
   return (
     <div
@@ -31,6 +43,8 @@ const KanbanItem = ({ item }: IKanbanItemProps) => {
       {...listeners}
       className={cn(
         "p-2.5 h-[100px] min-h-[100px] items-center flex text-left rounded-xl hover:ring-2 hover:ring-inset hover:ring-rose-500 cursor-grab relative select-none",
+        isDragging && "opacity-30 z-[2]",
+        !isDragging && "hover:ring-2 hover:ring-inset hover:ring-rose-500",
       )}
     >
       <div className="overflow-hidden">
@@ -40,7 +54,7 @@ const KanbanItem = ({ item }: IKanbanItemProps) => {
 
         <div className="flex items-center gap-x-1 text-gray-500">
           <p>#{number}</p>
-          <p>opened {formatDate(created_at)}</p>
+          <p>opened {formatDate(openedAt)}</p>
         </div>
 
         <div className="flex items-center gap-x-1 text-gray-500">
