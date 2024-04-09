@@ -6,14 +6,17 @@ import {
   selectRepoOwnerUrl,
   selectRepoStars,
   selectRepoUrl,
+  selectRepoLoading,
 } from "../redux/features/repo/repoSelectors"
+
+import { TailSpin } from "react-loader-spinner"
 
 import { FaRegStar } from "react-icons/fa"
 
-import { capitalizeWord } from "../helpers/capitalizeWord"
-import { formatStars } from "../helpers/formatStars"
+import { capitalizeWord, formatStars } from "../helpers"
 
 const Info = () => {
+  const isLoading = useAppSelector(selectRepoLoading)
   const repoName = useAppSelector(selectRepoName)
   const repoUrl = useAppSelector(selectRepoUrl)
   const repoOwner = useAppSelector(selectRepoOwner)
@@ -22,6 +25,18 @@ const Info = () => {
 
   if (!repoName || !repoOwner) {
     return null
+  }
+
+  if (isLoading) {
+    return (
+      <TailSpin
+        visible={true}
+        height="40"
+        width="40"
+        color="blue"
+        ariaLabel="tail-spin-loading"
+      />
+    )
   }
 
   return (
