@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 
 import {
@@ -10,11 +10,15 @@ import {
 } from "@dnd-kit/core"
 import { createPortal } from "react-dom"
 
-import { updateIssuePosition } from "../redux/features/repo/repoSlice"
+import {
+  loadIssues,
+  updateIssuePosition,
+} from "../redux/features/repo/repoSlice"
 
 import {
   selectRepoIssues,
   selectRepoLoading,
+  selectRepoUrl,
 } from "../redux/features/repo/repoSelectors"
 
 import { TailSpin } from "react-loader-spinner"
@@ -25,16 +29,20 @@ import { COLUMNS } from "../constants"
 
 import type { ColumnState, IColumn, IIssue } from "../types"
 import type { DragStartEvent, DragEndEvent, DragOverEvent } from "@dnd-kit/core"
+
 import { arrayMove } from "@dnd-kit/sortable"
 
 const KanbanBoard = () => {
   const dispatch = useAppDispatch()
 
   const isLoading = useAppSelector(selectRepoLoading)
-  const issues = useAppSelector(selectRepoIssues)
 
   const [activeColumn, setActiveColumn] = useState<IColumn | null>(null)
   const [activeIssue, setActiveIssue] = useState<IIssue | null>(null)
+
+  useEffect(() => {
+    dispatch(loadIssues())
+  }, [dispatch])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -43,6 +51,8 @@ const KanbanBoard = () => {
       },
     }),
   )
+
+  let issues = useAppSelector(selectRepoIssues)
 
   if (isLoading) {
     return (
@@ -223,6 +233,15 @@ const KanbanBoard = () => {
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event
     if (!over) return
+
+    if (over.id === active.id) return
+
+    let overIssue: IIssue | null = null
+    if (typeof over.id === "number") {
+      overIssue = getOverIssue(over, over.id)
+    }
+
+    console.log(overIssue)
   }
 
   function getOverIssue(over: any, id: number) {

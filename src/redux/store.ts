@@ -15,23 +15,23 @@ import storage from "redux-persist/lib/storage"
 
 import { repoSlice } from "./features/repo/repoSlice"
 
-const rootReducer = combineReducers({
-  repo: repoSlice.reducer,
-})
-
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["repo"],
+  blacklist: ["issues"],
 }
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
+const persistedRepoReducer = persistReducer(persistConfig, repoSlice.reducer)
+
+const rootReducer = combineReducers({
+  repo: persistedRepoReducer,
+})
 
 export type RootState = ReturnType<typeof rootReducer>
 
 export const makeStore = (preloadedState?: Partial<RootState>) => {
   const store = configureStore({
-    reducer: persistedReducer,
+    reducer: rootReducer,
 
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({

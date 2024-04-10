@@ -52,6 +52,14 @@ export const repoSlice = createSlice({
       action: PayloadAction<{ column: ColumnState; newIssues: IIssue[] }>,
     ) {
       state.issues[action.payload.column] = action.payload.newIssues
+
+      localStorage.setItem(state.repoUrl, JSON.stringify(state.issues))
+    },
+
+    loadIssues(state) {
+      if (localStorage.getItem(state.repoUrl)) {
+        state.issues = JSON.parse(localStorage.getItem(state.repoUrl)!)
+      }
     },
   },
   extraReducers(builder) {
@@ -121,6 +129,13 @@ export const repoSlice = createSlice({
         getRepoIssues.fulfilled,
         (state, action: PayloadAction<IRepoIssuesResponse>) => {
           state.loading = false
+
+          if (localStorage.getItem(state.repoUrl)) {
+            state.issues = JSON.parse(localStorage.getItem(state.repoUrl)!)
+
+            return
+          }
+
           const newIssues = action.payload.map(
             issue =>
               ({
@@ -150,6 +165,8 @@ export const repoSlice = createSlice({
               newIssues.filter(issue => issue.columnState === "done"),
             ),
           }
+
+          localStorage.setItem(state.repoUrl, JSON.stringify(state.issues))
         },
       )
       .addCase(getRepoIssues.rejected, (state, action) => {
@@ -171,6 +188,6 @@ export const repoSlice = createSlice({
   },
 })
 
-export const { updateIssuePosition } = repoSlice.actions
+export const { updateIssuePosition, loadIssues } = repoSlice.actions
 
 export const repoReducer = repoSlice.reducer
