@@ -193,13 +193,18 @@ const KanbanBoard = () => {
       overIssue &&
       overIssue.columnState !== currentIssue.columnState
     ) {
-      const newIssues = [
-        ...issues[overIssue.columnState as ColumnState],
-        {
-          ...currentIssue,
-          columnState: overIssue.columnState as ColumnState,
-        },
-      ]
+      const newIndex = issues[overIssue.columnState as ColumnState].findIndex(
+        item => item.id === over.id,
+      )
+
+      const modifiedIssues =
+        issues[overIssue.columnState as ColumnState].slice()
+      modifiedIssues.splice(newIndex, 0, {
+        ...currentIssue,
+        columnState: overIssue.columnState as ColumnState,
+      })
+
+      const newIssues = [...modifiedIssues]
 
       dispatch(
         updateIssuePosition({
@@ -236,12 +241,10 @@ const KanbanBoard = () => {
 
     if (over.id === active.id) return
 
-    let overIssue: IIssue | null = null
-    if (typeof over.id === "number") {
-      overIssue = getOverIssue(over, over.id)
-    }
-
-    console.log(overIssue)
+    // let overIssue: IIssue | null = null
+    // if (typeof over.id === "number") {
+    //   overIssue = getOverIssue(over, over.id)
+    // }
   }
 
   function getOverIssue(over: any, id: number) {
