@@ -18,7 +18,6 @@ import {
 import {
   selectRepoIssues,
   selectRepoLoading,
-  selectRepoUrl,
 } from "../redux/features/repo/repoSelectors"
 
 import { TailSpin } from "react-loader-spinner"
@@ -28,13 +27,14 @@ import KanbanItem from "./kanban-item"
 import { COLUMNS } from "../constants"
 
 import type { ColumnState, IColumn, IIssue } from "../types"
-import type { DragStartEvent, DragEndEvent, DragOverEvent } from "@dnd-kit/core"
+import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core"
 
 import { arrayMove } from "@dnd-kit/sortable"
 
 const KanbanBoard = () => {
   const dispatch = useAppDispatch()
 
+  const issues = useAppSelector(selectRepoIssues)
   const isLoading = useAppSelector(selectRepoLoading)
 
   const [activeColumn, setActiveColumn] = useState<IColumn | null>(null)
@@ -51,8 +51,6 @@ const KanbanBoard = () => {
       },
     }),
   )
-
-  let issues = useAppSelector(selectRepoIssues)
 
   if (isLoading) {
     return (
@@ -73,7 +71,6 @@ const KanbanBoard = () => {
         sensors={sensors}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
-        onDragOver={onDragOver}
       >
         <div className="m-auto flex gap-4">
           <div className="flex gap-4">
@@ -191,24 +188,24 @@ const KanbanBoard = () => {
     } else if (
       typeof over.id === "number" &&
       overIssue &&
-      overIssue.columnState !== currentIssue.columnState
+      (overIssue as IIssue).columnState !== currentIssue.columnState
     ) {
-      const newIndex = issues[overIssue.columnState as ColumnState].findIndex(
-        item => item.id === over.id,
-      )
+      const newIndex = issues[
+        (overIssue as IIssue).columnState as ColumnState
+      ].findIndex(item => item.id === over.id)
 
       const modifiedIssues =
-        issues[overIssue.columnState as ColumnState].slice()
+        issues[(overIssue as IIssue).columnState as ColumnState].slice()
       modifiedIssues.splice(newIndex, 0, {
         ...currentIssue,
-        columnState: overIssue.columnState as ColumnState,
+        columnState: (overIssue as IIssue).columnState as ColumnState,
       })
 
       const newIssues = [...modifiedIssues]
 
       dispatch(
         updateIssuePosition({
-          column: overIssue.columnState as ColumnState,
+          column: (overIssue as IIssue).columnState as ColumnState,
           newIssues,
         }),
       )
@@ -233,18 +230,6 @@ const KanbanBoard = () => {
     const newIndex = issues[columnState].findIndex(item => item.id === over.id)
     const newIssues = arrayMove(issues[columnState], oldIndex, newIndex)
     dispatch(updateIssuePosition({ column: columnState, newIssues }))
-  }
-
-  function onDragOver(event: DragOverEvent) {
-    const { active, over } = event
-    if (!over) return
-
-    if (over.id === active.id) return
-
-    // let overIssue: IIssue | null = null
-    // if (typeof over.id === "number") {
-    //   overIssue = getOverIssue(over, over.id)
-    // }
   }
 
   function getOverIssue(over: any, id: number) {
