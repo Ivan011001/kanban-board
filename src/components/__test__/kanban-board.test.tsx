@@ -33,6 +33,7 @@ const mockRepoState = {
     done: [],
   },
   loading: false,
+  repoUrl: "http://test.com/repo",
 }
 
 describe("KanbanBoard Component", () => {
