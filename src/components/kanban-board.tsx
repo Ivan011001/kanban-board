@@ -18,6 +18,7 @@ import {
 import {
   selectRepoIssues,
   selectRepoLoading,
+  selectRepoUrl,
 } from "../redux/features/repo/repoSelectors"
 
 import { TailSpin } from "react-loader-spinner"
@@ -30,10 +31,12 @@ import type { ColumnState, IColumn, IIssue } from "../types"
 import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core"
 
 import { arrayMove } from "@dnd-kit/sortable"
+import Greeting from "./greeting"
 
 const KanbanBoard = () => {
   const dispatch = useAppDispatch()
 
+  const repoUrl = useAppSelector(selectRepoUrl)
   const issues = useAppSelector(selectRepoIssues)
   const isLoading = useAppSelector(selectRepoLoading)
 
@@ -64,6 +67,8 @@ const KanbanBoard = () => {
       />
     )
   }
+
+  if (!repoUrl) return <Greeting />
 
   return (
     <div className="m-auto flex w-full items-center overflow-x-auto overflow-y-hidden px-[40px]">
