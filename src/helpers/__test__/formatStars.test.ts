@@ -1,4 +1,4 @@
-import { formatStars } from "../../helpers"
+import { formatStars } from ".."
 
 describe("formatStars function", () => {
   test("it correctly formats numbers less than 1000", () => {

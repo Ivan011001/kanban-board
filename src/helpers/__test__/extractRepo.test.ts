@@ -1,4 +1,4 @@
-import { extractRepo } from "../../helpers"
+import { extractRepo } from ".."
 
 describe("extractRepo function", () => {
   test("it correctly extracts repository owner and name from GitHub URL", () => {
